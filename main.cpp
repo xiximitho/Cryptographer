@@ -1,6 +1,9 @@
-#include <iostream>
+#include "FormBase.h"
+#include <gtkmm/application.h>
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+int main(int argc, char* argv[]) {
+    auto app = Gtk::Application::create("org.ftk.base");
+
+
+    return app->make_window_and_run<FormBase>(argc, argv);
 }
