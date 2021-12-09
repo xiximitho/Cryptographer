@@ -1,4 +1,4 @@
-#include "FormBase.h"
+#include "src/FormBase.h"
 #include <gtkmm/application.h>
 
 int main(int argc, char* argv[]) {
