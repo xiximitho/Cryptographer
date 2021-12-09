@@ -5,6 +5,7 @@
 #include "FormBase.h"
 #include <utility>
 
+
 FormBase::~FormBase() = default;
 
 FormBase::FormBase(ustring Title, int Width, int Height) {

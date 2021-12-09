@@ -6,8 +6,6 @@
 #define TAMANHO_BLOCO_AES 16
 #define TAMANHO_CHAVE 32
 
-aes::aes() = default;
-
 std::string aes::crypt(std::string key, std::string iv, std::string txt) {
     uint8_t UKey[TAMANHO_CHAVE];
     uint8_t UIv[TAMANHO_BLOCO_AES];
@@ -54,4 +52,21 @@ std::string aes::decrypt(std::string key, std::string iv, std::string txt) {
     AES_cbc_encrypt(reinterpret_cast<const unsigned char *> (txt.c_str()), DecryptedData, Tamanho, (const AES_KEY*)AesDecryptKey, UIv, AES_DECRYPT);
 
     return reinterpret_cast<char*>(DecryptedData);
+}
+
+void aes::cryptFile(std::string key, std::string iv, std::string path) {
+    std::ifstream file(path);
+    std::vector<char> buffer;
+
+    file.seekg(0, std::ifstream::end);
+    size_t length = file.tellg();
+    std::cout << "tamanho: " << length;
+    file.seekg(0, std::ifstream::beg);
+
+    if (length > 0) {
+        buffer.resize(length);
+        file.read(&buffer[0], (long)length);
+    }
+
+    std::cout << std::string(buffer.begin(), buffer.end());
 }

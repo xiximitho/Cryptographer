@@ -7,6 +7,9 @@
 
 #include <cinttypes>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <openssl/aes.h>
 #include <openssl/rand.h>
 #include <glibmm.h>
@@ -14,9 +17,9 @@ using namespace Glib;
 
 class aes {
 public:
-    aes();
-    std::string crypt(std::string key, std::string iv, std::string txt);
-    std::string decrypt(std::string key, std::string iv, std::string txt);
+    static std::string crypt(std::string key, std::string iv, std::string txt);
+    static std::string decrypt(std::string key, std::string iv, std::string txt);
+    static void cryptFile(std::string key, std::string iv, std::string path);
 };
 
 
