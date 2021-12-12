@@ -2,7 +2,7 @@
 // Created by felipe on 05/12/2021.
 //
 
-#include "FormBase.h"
+#include "formbase.h"
 #include <utility>
 #include <iostream>
 #include <gtkmm/button.h>
@@ -12,7 +12,8 @@
 
 FormBase::~FormBase() = default;
 
-FormBase::FormBase(ustring Title, int Width, int Height) {
+FormBase::FormBase(ustring Title, int Width, int Height)
+  :boxLayout(Gtk::Orientation::VERTICAL) {
     this->Title = std::move(Title);
     this->Width = Width;
     this->Height = Height;
@@ -23,12 +24,12 @@ FormBase::FormBase(ustring Title, int Width, int Height) {
   label->set_expand(true);
 
   //Box para colocar a label + botao ou Imagem:
-  auto hbox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 5);
-  //hbox->append(*pmap);
-  hbox->append(*label);
+  boxLayout.set_margin (5);
+  set_child (boxLayout);
+
 
   //Colocar o box no botao
-  pButtonCompress.set_child(*hbox);
+  pButtonCompress.set_child(boxLayout);
 
   set_title(this->Title);
   set_default_size(this->Width, this->Height);

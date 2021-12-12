@@ -11,7 +11,7 @@ using namespace Glib;
 
 class FormBase : public Gtk::Window {
 public:
-    explicit FormBase(ustring Title = "FormBase", int Width = 1280, int Height = 900);
+    explicit FormBase(ustring Title = "formbase", int Width = 1280, int Height = 900);
     ~FormBase() override;
 
 protected:
@@ -25,6 +25,9 @@ protected:
 
   //Widgets
   Gtk::Button pButtonCompress;
+  Gtk::Box boxLayout;
+  Gtk::TreeView tr;
+  Gtk::ScrolledWindow scrollWindow;
 };
 
 
