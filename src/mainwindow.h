@@ -51,10 +51,10 @@ class MainWindow : public Gtk::Window{
   template <typename Type> inline
   void add_column_w_mask(const Glib::ustring& title, const Gtk::TreeModelColumn<Type>& m_column, const Glib::ustring& mask);
 
-  //utilizar para adicionar na model
-  Gtk::TreeRow m_Row;
-
   short file_count = 0;
+  static void search_and_replace (std::string &value, const std::string &search, const std::string &replace);
+
+  static void encrypt (const std::array<CryptoPP::byte, 16> &key, const std::array<CryptoPP::byte, 16> &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out);
 };
 
 #endif //_MAINWINDOW_H_

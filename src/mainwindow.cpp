@@ -3,6 +3,14 @@
 //
 
 #include "mainwindow.h"
+#include <cryptopp/files.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/osrng.h>
+#include <fstream>
+#include <iostream>
+
+using aes_key_t = std::array<CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH>;
+using aes_iv_t = std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE>;
 
 MainWindow::~MainWindow ()
 = default;
@@ -51,7 +59,7 @@ void MainWindow::set_layout ()
 
 
   m_Button_Add.set_label ("Adicionar");
-  m_Button_Compress.set_label ("Comprimir");
+  m_Button_Compress.set_label ("Criptografar");
   m_Button_Quit.set_label ("Fechar");
   m_ButtonBox.set_spacing (33);
   m_ButtonBox.append (m_Button_Add);
@@ -77,11 +85,13 @@ void MainWindow::set_slots ()
 
 void MainWindow::add_item (unsigned int id, const Glib::ustring& name, double value, int percent)
 {
+  Gtk::TreeRow m_Row;
   m_Row = *(m_refTreeModel->append());
   m_Row[m_Columns.m_col_id] = id;
   m_Row[m_Columns.m_col_name] = name;
   m_Row[m_Columns.m_col_value] = value;
   m_Row[m_Columns.m_col_percentage] = percent;
+
 }
 
 template<typename Type>
@@ -149,11 +159,56 @@ void MainWindow::on_file_dialog_response (int response_id, Gtk::FileChooserDialo
 }
 void MainWindow::on_click_m_Button_Compress ()
 {
+  //para cada filho(item)
+  for(auto row : m_refTreeModel->children()){
+    std::cout << "id: " << row[m_Columns.m_col_id] << "\n";
 
+      std::cout <<  CryptoPP::AES::BLOCKSIZE << std::endl;
+
+      CryptoPP::AutoSeededRandomPool rng{};
+
+      // Gera uma chave aleatoria
+      aes_key_t key{};
+      rng.GenerateBlock(key.data(), key.size());
+
+      // Gera um vetor inicial aleatorio
+      aes_iv_t iv{};
+      rng.GenerateBlock(iv.data(), iv.size());
+
+      encrypt(key, iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name] + ".crypto");
+  }
+
+  std::cout << "Finalizado";
 }
 void MainWindow::add_file_list (std::string &filename)
 {
   file_count++;
-
+  //somente caso nao for windows irá introduzir um backslash e espaço (definidos por sistemas baseados em unix)
+#ifndef __WIN32
+  search_and_replace (filename, std::string(" "), std::string("\\ "));
+#endif
   add_item (file_count,filename, 0.00, 0);
 }
+
+void MainWindow::search_and_replace(std::string& str, std::string const& search,std::string const& replace)
+{
+  std::string::size_type next;
+
+  for(next = str.find(search);next != std::string::npos;next = str.find(search,next))
+    {
+      str.replace(next,search.length(),replace);
+      next += replace.length();
+    }
+}
+
+void MainWindow::encrypt(const aes_key_t &key, const aes_iv_t &iv,const Glib::ustring &filename_in, const Glib::ustring &filename_out)
+{
+  CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cipher{};
+  cipher.SetKeyWithIV(key.data(), key.size(), iv.data());
+
+  std::ifstream in{filename_in, std::ios::binary};
+  std::ofstream out{filename_out, std::ios::binary};
+
+  CryptoPP::FileSource{in, /*bombeia todos=*/true,new CryptoPP::StreamTransformationFilter{cipher, new CryptoPP::FileSink{out}}};
+}
+
