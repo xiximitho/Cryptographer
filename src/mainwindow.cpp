@@ -3,14 +3,8 @@
 //
 
 #include "mainwindow.h"
-#include <cryptopp/files.h>
-#include <cryptopp/modes.h>
-#include <cryptopp/osrng.h>
-#include <fstream>
-#include <iostream>
 
-using aes_key_t = std::array<CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH>;
-using aes_iv_t = std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE>;
+
 
 MainWindow::~MainWindow ()
 = default;
@@ -165,17 +159,22 @@ void MainWindow::on_click_m_Button_Compress ()
 
       std::cout <<  CryptoPP::AES::BLOCKSIZE << std::endl;
 
-      CryptoPP::AutoSeededRandomPool rng{};
+      Glib::ustring i = "Idt@102#";
 
-      // Gera uma chave aleatoria
-      aes_key_t key{};
-      rng.GenerateBlock(key.data(), key.size());
+      std::array<unsigned char, 16> b_key = {'#','!','@','b','a','b','a','b','a','b','a','b','a','b','a','b'};
 
-      // Gera um vetor inicial aleatorio
-      aes_iv_t iv{};
-      rng.GenerateBlock(iv.data(), iv.size());
+      std::array<unsigned char, 16> b_iv = {'0','x'};
 
-      encrypt(key, iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name] + ".crypto");
+      std::cout << "\n CHAVE: ";
+      for (auto ai:b_key)
+        {
+          std::cout << ai;
+        }
+
+      std::cout << "\n \n";
+      //encrypt(b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+"-cif");
+
+      decrypt (b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+".out");
   }
 
   std::cout << "Finalizado";
@@ -190,7 +189,7 @@ void MainWindow::add_file_list (std::string &filename)
   add_item (file_count,filename, 0.00, 0);
 }
 
-void MainWindow::search_and_replace(std::string& str, std::string const& search,std::string const& replace)
+void MainWindow::search_and_replace(std::basic_string<char> str, std::string const& search, std::string const& replace)
 {
   std::string::size_type next;
 
@@ -212,3 +211,13 @@ void MainWindow::encrypt(const aes_key_t &key, const aes_iv_t &iv,const Glib::us
   CryptoPP::FileSource{in, /*bombeia todos=*/true,new CryptoPP::StreamTransformationFilter{cipher, new CryptoPP::FileSink{out}}};
 }
 
+void MainWindow::decrypt(const aes_key_t &key, const aes_iv_t &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out)
+{
+  CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cipher{};
+  cipher.SetKeyWithIV(key.data(), key.size(), iv.data());
+
+  std::ifstream in{filename_in, std::ios::binary};
+  std::ofstream out{filename_out, std::ios::binary};
+
+  CryptoPP::FileSource{in, /*bombeia todos=*/true,new CryptoPP::StreamTransformationFilter{cipher, new CryptoPP::FileSink{out}}};
+}

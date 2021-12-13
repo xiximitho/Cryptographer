@@ -11,7 +11,13 @@
 #include <iostream>
 #include "cryptopp/gzip.h"
 #include "cryptopp/files.h"
+#include <cryptopp/modes.h>
+#include <cryptopp/aes.h>
+#include <iostream>
+#include <openssl/aes.h>
 
+using aes_key_t = std::array<CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH>;
+using aes_iv_t = std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE>;
 
 class MainWindow : public Gtk::Window{
  public:
@@ -52,9 +58,10 @@ class MainWindow : public Gtk::Window{
   void add_column_w_mask(const Glib::ustring& title, const Gtk::TreeModelColumn<Type>& m_column, const Glib::ustring& mask);
 
   short file_count = 0;
-  static void search_and_replace (std::string &value, const std::string &search, const std::string &replace);
+  static void search_and_replace (std::basic_string<char> value, const std::string &search, const std::string &replace);
 
   static void encrypt (const std::array<CryptoPP::byte, 16> &key, const std::array<CryptoPP::byte, 16> &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out);
+  static void decrypt (const std::array<CryptoPP::byte, 16> &key, const std::array<CryptoPP::byte, 16> &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out);
 };
 
 #endif //_MAINWINDOW_H_
