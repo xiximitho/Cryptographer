@@ -172,7 +172,7 @@ void MainWindow::on_click_m_Button_Compress ()
         }
 
       std::cout << "\n \n";
-      //encrypt(b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+"-cif");
+      //encrypt(b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+"-cif");a
 
       decrypt (b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+".out");
   }
