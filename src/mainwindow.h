@@ -14,7 +14,6 @@
 #include <cryptopp/modes.h>
 #include <cryptopp/aes.h>
 #include <iostream>
-#include <openssl/aes.h>
 
 using aes_key_t = std::array<CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH>;
 using aes_iv_t = std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE>;
@@ -37,16 +36,18 @@ class MainWindow : public Gtk::Window{
 
   Gtk::Box m_VBox;
 
-  Gtk::ScrolledWindow m_ScrolledWindow;
-  Gtk::TreeView m_TreeView;
+  Gtk::ScrolledWindow m_scrolledWindow;
+  Gtk::TreeView m_treeView;
   Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
 
-  ListModelColumns m_Columns;
+  ListModelColumns m_columns;
 
-  Gtk::Box m_ButtonBox;
-  Gtk::Button m_Button_Quit;
-  Gtk::Button m_Button_Add;
-  Gtk::Button m_Button_Compress;
+  Gtk::Box m_buttonBox;
+  Gtk::Button m_button_Quit;
+  Gtk::Button m_button_Add;
+  Gtk::Button m_button_Compress;
+  Gtk::Button m_button_Decompress;
+  Gtk::Entry m_entry_Chave;
 
   void add_item(unsigned int id, const Glib::ustring& name, double value, int percent);
   void add_file_list(std::string& filename);
