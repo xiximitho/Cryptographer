@@ -1,4 +1,4 @@
-#include "src/mainwindow.h"
+#include "mainwindow.h"
 #include <gtkmm/application.h>
 
 int main(int argc, char* argv[]) {

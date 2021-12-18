@@ -6,9 +6,7 @@
 #define _MAINWINDOW_H_
 #include "gtkmm.h"
 #include "sigc++/sigc++.h"
-#include "listmodel.h"
 #include <utility>
-#include <iostream>
 #include "cryptopp/gzip.h"
 #include "cryptopp/files.h"
 #include <cryptopp/modes.h>
@@ -17,6 +15,17 @@
 
 using aes_key_t = std::array<CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH>;
 using aes_iv_t = std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE>;
+
+class ListModelColumns : public Gtk::TreeModel::ColumnRecord{
+   public:
+
+    ListModelColumns();
+    Gtk::TreeModelColumn<unsigned int> m_col_id;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+    Gtk::TreeModelColumn<double> m_col_value;
+    Gtk::TreeModelColumn<int> m_col_percentage;
+};
+
 
 class MainWindow : public Gtk::Window{
  public:
@@ -66,3 +75,4 @@ class MainWindow : public Gtk::Window{
 };
 
 #endif //_MAINWINDOW_H_
+

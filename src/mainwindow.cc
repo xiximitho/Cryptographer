@@ -5,6 +5,15 @@
 
 MainWindow::~MainWindow ()
 = default;
+/*Classe da listmodel*/
+
+ListModelColumns::ListModelColumns ()
+{
+  add(m_col_id);
+  add(m_col_name);
+  add(m_col_value);
+  add(m_col_percentage);
+}
 
 MainWindow::MainWindow ()
     : m_VBox(Gtk::Orientation::VERTICAL)
