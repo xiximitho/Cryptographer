@@ -1,9 +1,9 @@
-## Ftk
+## Cryptographer
 
-### Para utilizar a biblioteca crypto++ (Não suportada pelo CMake), é necessário compilar a biblioteca.
+### a versão inicial foi realizada utilizando CMake, e agora é utilizado o Meson pois a lib Crypto++ não era suportada pelo CMake, dando alguns conflitos.
 
-cd cryptopp <br>
-cmake . <br>
-make <br>
-make install (caso não tenha permissões, utilize o sudo ou troque o CMAKE_INSTALL_DIR para um local com permissões) <br>
-para mais informações sobre a Crypto++, utilize este link https://github.com/noloader/cryptopp-cmake
+
+deps: [ cryptopp, gtkmm4.0-dev(que inclui a Glib e Sigc++) ] <br>
+
+Versões do GTK+ acima da 3.0 irão funcionar corretamente. (Não testado em versões inferiores a 4.0).
+
