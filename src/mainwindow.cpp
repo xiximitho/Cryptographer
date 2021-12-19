@@ -5,7 +5,6 @@
 
 MainWindow::~MainWindow ()
 = default;
-/*Classe da listmodel*/
 
 ListModelColumns::ListModelColumns ()
 {
@@ -76,7 +75,6 @@ void MainWindow::set_layout ()
   m_button_Add.set_halign (Gtk::Align::END);
 
   m_VBox.append (m_buttonBox);
-
 }
 
 void MainWindow::set_slots ()
