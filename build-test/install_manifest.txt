@@ -1,0 +1,1 @@
+/usr/local/lib/gtkmm4/GTKMM_Cryptographer
