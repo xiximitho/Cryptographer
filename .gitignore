@@ -1,5 +1,5 @@
 cmake-build-debug/
 cmake-build-release/
-cryptopp/*
-cryptopp-build/*
+cryptopp/
+cryptopp-build/
 .idea/
