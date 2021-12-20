@@ -11,4 +11,5 @@ include_directories(GTKMM_Cryptographer PRIVATE ${GTKMM_INCLUDE_DIRS})
 
 target_link_libraries(GTKMM_Cryptographer PRIVATE ${GTKMM_LIBRARIES})
 target_link_libraries(GTKMM_Cryptographer PRIVATE cryptopp-static)
-install(TARGETS GTKMM_Cryptographer DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gtkmm4)
+install(TARGETS GTKMM_Cryptographer DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+message(STATUS "Localizacao binario: ${CMAKE_INSTALL_PREFIX}/bin/")
