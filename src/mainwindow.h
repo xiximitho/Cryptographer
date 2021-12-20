@@ -17,7 +17,7 @@ using aes_key_t = std::array < CryptoPP::byte, CryptoPP::AES::DEFAULT_KEYLENGTH 
 using aes_iv_t = std::array < CryptoPP::byte, CryptoPP::AES::BLOCKSIZE >;
 
 class ListModelColumns: public Gtk::TreeModel::ColumnRecord {
-public:
+ public:
 
   ListModelColumns();
   Gtk::TreeModelColumn < unsigned int > m_col_id;
@@ -28,15 +28,16 @@ public:
 
 
 class MainWindow: public Gtk::Window {
-public:
+ public:
   MainWindow();
   ~MainWindow() override;
 
-protected:
+ protected:
   //Signals
   void on_click_m_Button_Quit();
   void on_click_m_Button_Add();
   void on_click_m_Button_Compress();
+  void on_click_m_Button_Decompress();
   //Signal de resposta do dialog
   void on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog);
 
@@ -50,6 +51,9 @@ protected:
   Gtk::TreeView m_treeView;
   Glib::RefPtr < Gtk::ListStore > m_refTreeModel;
 
+  //message box
+  std::unique_ptr<Gtk::MessageDialog> m_pDialog;
+
   ListModelColumns m_columns;
 
   Gtk::Box m_buttonBox;
@@ -59,6 +63,7 @@ protected:
   Gtk::Button m_button_Decompress;
   Gtk::Entry m_entry_Chave;
 
+  void show_finished_msg_box();
   void add_item(unsigned int id, const Glib::ustring& name, double value, int percent);
   void add_file_list(std::string& filename);
   //template para adicionar qualquer tipo para a treeview
@@ -73,6 +78,7 @@ protected:
 
   static void encrypt(const std::array < CryptoPP::byte, 16 > &key, const std::array < CryptoPP::byte, 16 > &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out);
   static void decrypt(const std::array < CryptoPP::byte, 16 > &key, const std::array < CryptoPP::byte, 16 > &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out);
+  std::array<unsigned char, 16> convert_to_barray (const Glib::ustring &entry);
 };
 
 #endif //_MAINWINDOW_H_

@@ -82,6 +82,7 @@ void MainWindow::set_slots ()
   m_button_Quit.signal_clicked().connect( sigc::mem_fun(*this,&MainWindow::on_click_m_Button_Quit));
   m_button_Add.signal_clicked().connect (sigc::mem_fun (*this, &MainWindow::on_click_m_Button_Add));
   m_button_Compress.signal_clicked().connect (sigc::mem_fun (*this, &MainWindow::on_click_m_Button_Compress));
+  m_button_Decompress.signal_clicked().connect (sigc::mem_fun (*this, &MainWindow::on_click_m_Button_Decompress));
 }
 
 void MainWindow::add_item (unsigned int id, const Glib::ustring& name, double value, int percent)
@@ -161,31 +162,34 @@ void MainWindow::on_file_dialog_response (int response_id, Gtk::FileChooserDialo
 void MainWindow::on_click_m_Button_Compress ()
 {
   //para cada filho(item)
-  for(auto row : m_refTreeModel->children()){
-    std::cout << "id: " << row[m_columns.m_col_id] << "\n";
-
-      std::cout <<  CryptoPP::AES::BLOCKSIZE << std::endl;
-
-      Glib::ustring i = "Idt@102#";
-
-      std::array<unsigned char, 16> b_key = {'#','!','@','b','a','b','a','b','a','b','a','b','a','b','a','b'};
-
+  if(!m_refTreeModel->children().empty())
+    {
+      std::array<unsigned char, 16> b_user_key = convert_to_barray (m_entry_Chave.get_text());
       std::array<unsigned char, 16> b_iv = {'0','x'};
-
-      std::cout << "\n CHAVE: ";
-      for (auto ai:b_key)
+      for(auto row : m_refTreeModel->children())
         {
-          std::cout << ai;
+          encrypt(b_user_key, b_iv, row[m_columns.m_col_name], row[m_columns.m_col_name]+"-cif");
+        }
+      show_finished_msg_box();
+    }
+}
+
+void MainWindow::on_click_m_Button_Decompress ()
+{
+  if(!m_refTreeModel->children().empty())
+    {
+      std::array<unsigned char, 16> b_user_key = convert_to_barray (m_entry_Chave.get_text());
+      std::array<unsigned char, 16> b_iv = {'0','x'};
+      for(auto row : m_refTreeModel->children())
+        {
+
+          decrypt (b_user_key, b_iv, row[m_columns.m_col_name], row[m_columns.m_col_name]+".out");
         }
 
-      std::cout << "\n \n";
-      //encrypt(b_key, b_iv, row[m_Columns.m_col_name], row[m_Columns.m_col_name]+"-cif");
-
-      decrypt (b_key, b_iv, row[m_columns.m_col_name], row[m_columns.m_col_name]+".out");
-  }
-
-  std::cout << "Finalizado";
+      show_finished_msg_box();
+    }
 }
+
 void MainWindow::add_file_list (std::string &filename)
 {
   file_count++;
@@ -207,8 +211,24 @@ void MainWindow::search_and_replace(std::basic_string<char> str, std::string con
     }
 }
 
+std::array<unsigned char, 16> MainWindow::convert_to_barray(const Glib::ustring &entry)
+{
+  std::array<unsigned char, 16> result = {};
+
+  if(entry.size() <= result.size())
+    {
+      for(int i = 0; i < entry.size(); i++)
+        {
+          result[i] = entry[i];
+        }
+    }
+
+  return result;
+}
+
 void MainWindow::encrypt(const aes_key_t &key, const aes_iv_t &iv,const Glib::ustring &filename_in, const Glib::ustring &filename_out)
 {
+  std::cout << "MainWindow::encrypt || " << key.data() << " " << iv.data() << " \nfe:" << filename_in << "\nfo:" << filename_out;
   CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cipher{};
   cipher.SetKeyWithIV(key.data(), key.size(), iv.data());
 
@@ -220,6 +240,7 @@ void MainWindow::encrypt(const aes_key_t &key, const aes_iv_t &iv,const Glib::us
 
 void MainWindow::decrypt(const aes_key_t &key, const aes_iv_t &iv, const Glib::ustring &filename_in, const Glib::ustring &filename_out)
 {
+  std::cout << "MainWindow::decrypt || " << key.data() << " " << iv.data() << " \nfe:" << filename_in << "\nfo:" << filename_out;
   CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cipher{};
   cipher.SetKeyWithIV(key.data(), key.size(), iv.data());
 
@@ -227,4 +248,14 @@ void MainWindow::decrypt(const aes_key_t &key, const aes_iv_t &iv, const Glib::u
   std::ofstream out{filename_out, std::ios::binary};
 
   CryptoPP::FileSource{in, /*bombeia todos=*/true,new CryptoPP::StreamTransformationFilter{cipher, new CryptoPP::FileSink{out}}};
+}
+void MainWindow::show_finished_msg_box ()
+{
+  m_pDialog.reset(new Gtk::MessageDialog(*this, "Concluido"));
+  m_pDialog->set_secondary_text("O(s) arquivos foram criptografados utilizando o algoritmo AES com o modo CFB.");
+  m_pDialog->set_modal(true);
+  m_pDialog->set_hide_on_close(true);
+  m_pDialog->signal_response().connect(sigc::hide(sigc::mem_fun(*m_pDialog, &Gtk::Widget::hide)));
+
+  m_pDialog->show();
 }
