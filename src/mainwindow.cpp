@@ -11,7 +11,7 @@ ListModelColumns::ListModelColumns ()
   add(m_col_id);
   add(m_col_name);
   add(m_col_value);
-  add(m_col_percentage);
+  //add(m_col_percentage);
 }
 
 MainWindow::MainWindow ()
@@ -23,38 +23,37 @@ MainWindow::MainWindow ()
   add_column("Id", m_columns.m_col_id);
   add_column("Arquivo", m_columns.m_col_name);
 
-  add_column_w_mask ("Formatado", m_columns.m_col_value,"%010f");
+  add_column ("Tamanho", m_columns.m_col_value);
 
+  m_treeView.get_column (m_columns.m_col_name.index())->set_expand (true);
+  m_treeView.get_column (m_columns.m_col_name.index())->set_sizing (Gtk::TreeViewColumn::Sizing::AUTOSIZE);
+  //m_treeView.get_column (m_columns.m_col_name.index())->set_min_width(600);
+
+  m_treeView.get_column (2)->set_expand (false);
+  m_treeView.get_column (2)->set_sizing (Gtk::TreeViewColumn::Sizing::FIXED);
+  m_treeView.get_column (2)->set_min_width(160);
   //insere a barra de progresso para o campo percent
-  auto cell = Gtk::make_managed<Gtk::CellRendererProgress>();
+  /*auto cell = Gtk::make_managed<Gtk::CellRendererProgress>();
   int cols_count = m_treeView.append_column("Restante", *cell);
   auto pColumn = m_treeView.get_column(cols_count - 1);
   if(pColumn)
     {
       pColumn->add_attribute(cell->property_value(), m_columns.m_col_percentage);
     }
-
+*/
 }
 void MainWindow::set_layout ()
 {
   set_title("Cryptographer");
-  set_default_size(1280, 720);
+  set_default_size(1000, 600);
 
   m_VBox.set_margin(5);
   set_child(m_VBox);
 
   //Adiciona a treeview dentro do scroll
-  m_scrolledWindow.set_child(m_treeView);
-
-  //Mostra scrollbar somente quando é necessario
-  m_scrolledWindow.set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
-  m_scrolledWindow.set_expand();
-
-  m_VBox.append(m_scrolledWindow);
-
   m_refTreeModel = Gtk::ListStore::create(m_columns);
-
   m_treeView.set_model(m_refTreeModel);
+  m_treeView.set_headers_clickable (false);
 
 
   m_button_Add.set_label ("Adicionar");
@@ -62,6 +61,10 @@ void MainWindow::set_layout ()
   m_button_Decompress.set_label ("Descriptografar");
   m_button_Quit.set_label ("Fechar");
   m_buttonBox.set_spacing (33);
+  m_entry_Chave.set_max_length (16);
+  m_entry_Chave.set_tooltip_text ("Chave de 16 Bytes para Criptografia");
+  m_entry_Chave.set_placeholder_text ("Insira a Chave");
+  m_entry_Chave.set_margin_start (5);
   m_buttonBox.append (m_entry_Chave);
   m_buttonBox.append (m_button_Add);
   m_buttonBox.append (m_button_Compress);
@@ -75,6 +78,11 @@ void MainWindow::set_layout ()
   m_button_Add.set_halign (Gtk::Align::END);
 
   m_VBox.append (m_buttonBox);
+  m_scrolledWindow.set_child(m_treeView);
+  //Mostra scrollbar somente quando é necessario
+  m_scrolledWindow.set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
+  m_scrolledWindow.set_expand();
+  m_VBox.append(m_scrolledWindow);
 }
 
 void MainWindow::set_slots ()
@@ -92,7 +100,7 @@ void MainWindow::add_item (unsigned int id, const Glib::ustring& name, double va
   m_Row[m_columns.m_col_id] = id;
   m_Row[m_columns.m_col_name] = name;
   m_Row[m_columns.m_col_value] = value;
-  m_Row[m_columns.m_col_percentage] = percent;
+  //m_Row[m_columns.m_col_percentage] = percent;
 
 }
 
@@ -142,8 +150,9 @@ void MainWindow::on_file_dialog_response (int response_id, Gtk::FileChooserDialo
 
           //retorna uma std:string
           auto filename = dialog->get_file()->get_path();
+          auto arquivo = dialog->get_file()->query_info ();
           std::cout << "Arquivo Selecionado: " <<  filename << std::endl;
-          add_file_list(filename);
+          add_file_list(filename, arquivo->get_size());
           break;
         }
       case Gtk::ResponseType::CANCEL:
@@ -190,14 +199,14 @@ void MainWindow::on_click_m_Button_Decompress ()
     }
 }
 
-void MainWindow::add_file_list (std::string &filename)
+void MainWindow::add_file_list (std::string &filename, unsigned long long int size)
 {
   file_count++;
   //somente caso nao for windows irá introduzir um backslash e espaço (definidos por sistemas baseados em unix)
 #ifndef __WIN32
   search_and_replace (filename, std::string(" "), std::string("\\ "));
 #endif
-  add_item (file_count,filename, 0.00, 0);
+  add_item (file_count,filename, size, 0);
 }
 
 void MainWindow::search_and_replace(std::basic_string<char> str, std::string const& search, std::string const& replace)

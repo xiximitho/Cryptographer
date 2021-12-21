@@ -22,8 +22,7 @@ class ListModelColumns: public Gtk::TreeModel::ColumnRecord {
   ListModelColumns();
   Gtk::TreeModelColumn < unsigned int > m_col_id;
   Gtk::TreeModelColumn < Glib::ustring > m_col_name;
-  Gtk::TreeModelColumn < double > m_col_value;
-  Gtk::TreeModelColumn < int > m_col_percentage;
+  Gtk::TreeModelColumn < unsigned long long int> m_col_value;
 };
 
 
@@ -65,7 +64,7 @@ class MainWindow: public Gtk::Window {
 
   void show_finished_msg_box();
   void add_item(unsigned int id, const Glib::ustring& name, double value, int percent);
-  void add_file_list(std::string& filename);
+  void add_file_list(std::string& filename, unsigned long long int size);
   //template para adicionar qualquer tipo para a treeview
   template < typename Type > inline
   void add_column(const Glib::ustring& title, const Gtk::TreeModelColumn < Type >& m_column);
